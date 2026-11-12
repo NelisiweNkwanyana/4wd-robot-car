@@ -1,0 +1,825 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>4WD Robot Car</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Arduino UNO four-wheel-drive robot: line following, ultrasonic obstacle avoidance, Bluetooth and joystick control.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: an engineer's project sheet. Contour-mapped hero, then a ruled
+   spec sheet, mode cards with real command keycaps, the schematic as a
+   drawing plate, and a dated build log. */
+:root {
+  --paper: #f3f6f7;
+  --surface: #ffffff;
+  --ink: #0f1d33;
+  --muted: #56657a;
+  --rule: #d5dde4;
+  --teal: #0f7f81;
+  --teal-soft: #dcefee;
+  --contour: 15, 29, 51;          /* rgb of ink, for canvas alpha */
+  --contour-accent: 15, 127, 129;
+  --placeholder: #e7edf0;
+  --hatch: #cfd9df;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", Menlo, Consolas, monospace;
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.25rem;
+  --step-2: 1.75rem;
+  --step-3: clamp(2rem, 4vw, 2.75rem);
+  --step-hero: clamp(3.4rem, 12.5vw, 10.5rem);
+  --gutter: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  --maxw: 1180px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0b1422; --surface: #111d30; --ink: #e5ecf4; --muted: #9aabbf; --rule: #22324a;
+    --teal: #40c2c0; --teal-soft: #12313a; --contour: 229, 236, 244; --contour-accent: 64, 194, 192;
+    --placeholder: #142238; --hatch: #1d2e48; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0b1422; --surface: #111d30; --ink: #e5ecf4; --muted: #9aabbf; --rule: #22324a;
+  --teal: #40c2c0; --teal-soft: #12313a; --contour: 229, 236, 244; --contour-accent: 64, 194, 192;
+  --placeholder: #142238; --hatch: #1d2e48; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--font-body); font-size: var(--step-0); line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; border-radius: 2px; }
+img { max-width: 100%; }
+.wrap { max-width: var(--maxw); margin: 0 auto; padding-left: var(--gutter); padding-right: var(--gutter-r); }
+.mono { font-family: var(--font-mono); }
+.label {
+  font-family: var(--font-mono); font-size: var(--step--1); letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--muted);
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+h2 { font-size: var(--step-3); font-weight: 800; font-stretch: 112%; letter-spacing: -0.01em; line-height: 1.05; }
+h3 { font-size: var(--step-1); font-weight: 700; font-stretch: 100%; }
+p { margin: 0; }
+
+/* ---------- top bar ---------- */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule);
+}
+.bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; }
+.bar .mark { font-family: var(--font-mono); font-size: var(--step--1); font-weight: 600; letter-spacing: 0.06em; text-decoration: none; white-space: nowrap; }
+.bar nav { display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; }
+.bar nav a { font-size: var(--step--1); text-decoration: none; color: var(--muted); white-space: nowrap; }
+.bar nav a:hover { color: var(--teal); }
+
+/* ---------- hero ---------- */
+.hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--rule); }
+.hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hero .wrap { position: relative; padding-block: 56px 48px; display: grid; gap: 36px; }
+.hero-meta { display: flex; flex-wrap: wrap; gap: 10px 28px; }
+.hero h1 {
+  font-size: var(--step-hero); font-weight: 900; font-stretch: 125%;
+  line-height: 0.86; letter-spacing: -0.035em; text-transform: uppercase;
+}
+.hero h1 .num { color: var(--teal); }
+.hero-lower { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 36px; align-items: end; }
+.hero-lower .intro { max-width: 34rem; display: grid; gap: 18px; }
+.lede { font-size: var(--step-1); line-height: 1.5; }
+.status {
+  display: inline-flex; align-items: center; gap: 10px; align-self: start; justify-self: start;
+  font-family: var(--font-mono); font-size: var(--step--1);
+  border: 1px solid var(--rule); background: var(--surface); padding: 6px 12px; border-radius: 999px;
+}
+.status i { width: 8px; height: 8px; border-radius: 50%; background: #d08a10; flex: none; }
+
+/* placeholders: hatched, plainly labelled */
+.ph {
+  position: relative; width: 100%; max-width: 100%;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 11px, var(--hatch) 11px 12px),
+    var(--placeholder);
+  border: 1px dashed var(--muted); border-radius: 4px;
+  display: grid; place-items: center; text-align: center; padding: 20px;
+}
+.ph .tag { background: var(--surface); padding: 12px 16px; border-radius: 4px; border: 1px solid var(--rule); max-width: 26rem; display: grid; gap: 4px; }
+.ph .tag strong { font-family: var(--font-mono); font-size: var(--step--1); letter-spacing: 0.08em; text-transform: uppercase; }
+.ph .tag span { font-size: var(--step--1); color: var(--muted); }
+.ph-hero { aspect-ratio: 4 / 3; }
+.ph-wide { aspect-ratio: 16 / 9; }
+.ph-sq { aspect-ratio: 4 / 3; }
+
+/* ---------- sections ---------- */
+section { padding-block: 84px; border-bottom: 1px solid var(--rule); }
+.sec-head { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: 24px; margin-bottom: 40px; align-items: baseline; }
+.sec-head p { color: var(--muted); max-width: 40rem; }
+
+/* intro */
+.intro-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: 24px; }
+.intro-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.intro-cols p + p { margin-top: 1em; }
+
+/* specs: ruled sheet */
+.specs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 48px; border-top: 2px solid var(--ink); }
+.spec { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.spec dt { font-family: var(--font-mono); font-size: var(--step--1); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding-top: 2px; }
+.spec dd { margin: 0; font-variant-numeric: tabular-nums; }
+.spec dd .mono { font-size: 0.95em; }
+.foot-note { margin-top: 16px; font-size: var(--step--1); color: var(--muted); }
+
+/* feature cards */
+.modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.mode { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 24px; display: grid; gap: 14px; align-content: start; }
+.mode-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.key {
+  font-family: var(--font-mono); font-weight: 600; font-size: 1rem; min-width: 2.1rem; height: 2.1rem;
+  display: inline-grid; place-items: center; border-radius: 5px; color: var(--teal);
+  background: var(--teal-soft); border: 1px solid color-mix(in srgb, var(--teal) 40%, transparent);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--teal) 35%, transparent);
+}
+.mode ul { margin: 0; padding-left: 1.1em; color: var(--muted); font-size: 0.95rem; display: grid; gap: 4px; }
+.mode.safety { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.mode.safety ul { color: color-mix(in srgb, var(--paper) 78%, var(--ink)); }
+.mode.safety .label { color: color-mix(in srgb, var(--paper) 70%, var(--ink)); }
+.share { margin-top: 28px; display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 9fr); gap: 24px; }
+.share p { max-width: 46rem; }
+.flow { margin-top: 14px; overflow-x: auto; }
+.flow pre { margin: 0; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.55; color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 4px; padding: 16px; width: max-content; min-width: 100%; }
+
+/* stack */
+.stack { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; }
+.stack table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.stack th { text-align: left; font-family: var(--font-mono); font-size: var(--step--1); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding: 0 12px 10px 0; border-bottom: 2px solid var(--ink); }
+.stack td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.stack td:first-child { font-weight: 600; white-space: nowrap; }
+.stack h3 { margin-bottom: 16px; }
+
+/* circuit plate */
+.plate { background: #ffffff; border: 1px solid var(--rule); border-radius: 6px; overflow-x: auto; }
+.plate svg { display: block; width: 100%; min-width: 860px; height: auto; }
+.plate-cap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; margin-top: 12px; font-size: var(--step--1); color: var(--muted); }
+.pins { margin-top: 32px; overflow-x: auto; }
+.pins table { border-collapse: collapse; font-family: var(--font-mono); font-size: 0.82rem; min-width: 640px; width: 100%; }
+.pins th, .pins td { text-align: left; padding: 8px 14px 8px 0; border-bottom: 1px solid var(--rule); }
+.pins th { color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid var(--ink); }
+.pins td:first-child { color: var(--teal); font-weight: 600; }
+
+/* process: a real sequence */
+.log { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+.log li { display: grid; grid-template-columns: 4rem minmax(0, 1fr) auto; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
+.log .n { font-family: var(--font-mono); color: var(--muted); font-size: var(--step--1); }
+.log h3 { font-size: 1.05rem; }
+.log p { color: var(--muted); font-size: 0.95rem; margin-top: 2px; }
+.chip { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; padding: 3px 9px; border-radius: 999px; white-space: nowrap; border: 1px solid; }
+.chip.done { color: var(--teal); border-color: color-mix(in srgb, var(--teal) 45%, transparent); background: var(--teal-soft); }
+.chip.wait { color: #a86a00; border-color: #e2b766; background: color-mix(in srgb, #f3c46b 18%, var(--surface)); }
+:root[data-theme="dark"] .chip.wait { color: #f0c46a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip.wait { color: #f0c46a; } }
+
+/* demo + gallery */
+.demo { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: 16px; }
+.gallery { display: grid; gap: 16px; }
+.demo-list { margin-top: 24px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.demo-list div { border-top: 2px solid var(--ink); padding-top: 12px; }
+.demo-list p { color: var(--muted); font-size: 0.95rem; }
+
+/* repo */
+.repo { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px; align-items: center; }
+.repo h2 { font-size: clamp(2.2rem, 6vw, 4.4rem); font-stretch: 125%; font-weight: 900; text-transform: uppercase; line-height: 0.92; }
+.btn { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; background: var(--teal); color: #fff; font-weight: 600; padding: 14px 22px; border-radius: 4px; }
+:root[data-theme="dark"] .btn { color: #06161c; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { color: #06161c; } }
+.btn:hover { filter: brightness(1.08); }
+.repo-box { display: grid; gap: 14px; }
+.url { font-family: var(--font-mono); font-size: 0.9rem; background: var(--surface); border: 1px dashed var(--muted); padding: 10px 12px; border-radius: 4px; overflow-wrap: anywhere; }
+.tree { font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); line-height: 1.7; }
+
+footer { padding-block: 40px 56px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; font-size: var(--step--1); color: var(--muted); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+  .hero-lower, .sec-head, .intro-grid, .share, .stack, .demo, .repo { grid-template-columns: minmax(0, 1fr); }
+  .modes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .specs { grid-template-columns: minmax(0, 1fr); }
+  .demo-list { grid-template-columns: minmax(0, 1fr); }
+  .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  section { padding-block: 60px; }
+  .modes, .intro-cols { grid-template-columns: minmax(0, 1fr); }
+  .spec { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .log li { grid-template-columns: 2.5rem minmax(0, 1fr); }
+  .log .chip { grid-column: 2; justify-self: start; }
+  .bar nav { display: none; }
+  .gallery { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="mark" href="#top">PROJECT 04 · ROBOTICS</a>
+    <nav aria-label="Sections">
+      <a href="#overview">Overview</a><a href="#specs">Specs</a><a href="#features">Modes</a>
+      <a href="#stack">Stack</a><a href="#circuit">Circuit</a><a href="#process">Process</a>
+      <a href="#demo">Demo</a><a href="#repo">Code</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <canvas id="contours" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <div class="hero-meta">
+        <span class="label">Project 04</span>
+        <span class="label">Robotics · Embedded C++</span>
+        <span class="label">Arduino UNO / ATmega328P</span>
+      </div>
+      <h1><span class="num">4WD</span><br>Robot Car</h1>
+      <div class="hero-lower">
+        <div class="intro">
+          <p class="lede">A four-wheel-drive robot that follows a line, avoids obstacles by scanning with ultrasound, and drives from a phone over Bluetooth or from a joystick.</p>
+          <span class="status"><i></i>Firmware complete · hardware build in progress</span>
+        </div>
+        <div class="ph ph-hero" role="img" aria-label="Placeholder for robot photograph">
+          <div class="tag"><strong>Robot photo · placeholder</strong><span>Replace with a photo of the assembled robot (media/robot-hero.jpg). No photo yet: the robot hasn't been built.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="overview">
+    <div class="wrap intro-grid">
+      <span class="label">Introduction</span>
+      <div class="intro-cols">
+        <div>
+          <p>This project is a physical robot, not a simulation. It starts from a Robocentrix 4WD kit: chassis, four TT gear motors, an L298N driver, an HC-SR04 on a servo, and three IR line sensors. Everything that decides how the robot behaves is my own firmware.</p>
+          <p>Before writing code I checked the electrical side: current draw against the L298N's limits, the driver's voltage drop on a 2S pack, timer conflicts between the Servo library and PWM pins, and a pin plan that uses all 18 usable UNO pins without a clash.</p>
+        </div>
+        <div>
+          <p>The firmware is twelve modules with one rule: only the mode manager may command the motors. Behaviours propose a drive command, a safety filter can veto it, and every mode change ramps to a stop first.</p>
+          <p>The logic runs against a mocked Arduino core on my laptop: 92 automated checks covering mode changes, faults and failsafes. Physical testing follows a written checklist, and results are published here only once they've been measured.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="specs">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Key specifications</span>
+        <h2>Spec sheet</h2>
+      </div>
+      <dl class="specs">
+        <div class="spec"><dt>Controller</dt><dd>Arduino UNO R3 · ATmega328P · 16 MHz · 5 V logic</dd></div>
+        <div class="spec"><dt>Drive</dt><dd>4 × TT gear motor, skid-steer, two per channel</dd></div>
+        <div class="spec"><dt>Motor driver</dt><dd>L298N dual H-bridge · ~2 A per channel · PWM on <span class="mono">D5/D6</span></dd></div>
+        <div class="spec"><dt>Power</dt><dd>2S 18650 · 7.4 V nominal · switch + 3 A fuse · cut-off 6.4 V</dd></div>
+        <div class="spec"><dt>Distance</dt><dd>HC-SR04 on SG90 pan servo · stop at 20 cm · slow at 40 cm</dd></div>
+        <div class="spec"><dt>Line sensing</dt><dd>3 × TCRT5000 IR modules, digital · <span class="mono">A0–A2</span></dd></div>
+        <div class="spec"><dt>Wireless</dt><dd>HC-05 Bluetooth Classic SPP · 9600 baud · Android</dd></div>
+        <div class="spec"><dt>Manual input</dt><dd>Phone app keys · optional KY-023 joystick on <span class="mono">A3/A4</span></dd></div>
+        <div class="spec"><dt>Firmware</dt><dd>C++ (Arduino) · 12 modules · non-blocking loop · sonar every 60 ms</dd></div>
+        <div class="spec"><dt>Failsafes</dt><dd>600 ms link-loss stop · instant e-stop · latched faults</dd></div>
+      </dl>
+      <p class="foot-note">Design values from <span class="mono">Config.h</span>. Speed, run time and range will be added after measurement on the built robot.</p>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Operating modes</span>
+        <div style="display:grid;gap:12px">
+          <h2>Four modes, one motor owner</h2>
+          <p>Each mode is selected with a single key from the phone or the USB Serial Monitor. Every change ramps the motors to a stop before the new mode starts.</p>
+        </div>
+      </div>
+      <div class="modes">
+        <article class="mode">
+          <div class="mode-top"><span class="label">Autonomous</span><span class="key" title="Command key">T</span></div>
+          <h3>Line following</h3>
+          <ul>
+            <li>Three IR sensors: soft and hard corrections</li>
+            <li>Inner wheel reverses on tight curves</li>
+            <li>Coasts through gaps, then searches</li>
+            <li>Stops with a fault if the line is lost</li>
+            <li>Pauses for objects on the track</li>
+          </ul>
+        </article>
+        <article class="mode">
+          <div class="mode-top"><span class="label">Autonomous</span><span class="key" title="Command key">O</span></div>
+          <h3>Obstacle avoidance</h3>
+          <ul>
+            <li>Slows at 40 cm, stops at 20 cm</li>
+            <li>Backs off, scans left and right</li>
+            <li>Turns toward the clearer side</li>
+            <li>Re-checks before driving on</li>
+            <li>Gives up safely when boxed in</li>
+          </ul>
+        </article>
+        <article class="mode">
+          <div class="mode-top"><span class="label">Manual</span><span class="key" title="Command key">M</span></div>
+          <h3>Bluetooth control</h3>
+          <ul>
+            <li><span class="mono">F B L R</span> plus four curve keys</li>
+            <li>Speed <span class="mono">0–9</span>, <span class="mono">q</span> for full</li>
+            <li>Hold-to-drive; stops after 600 ms of silence</li>
+            <li>Refuses to drive forward into an obstacle</li>
+          </ul>
+        </article>
+        <article class="mode">
+          <div class="mode-top"><span class="label">Manual</span><span class="key" title="Command key">K</span></div>
+          <h3>Joystick control</h3>
+          <ul>
+            <li>Proportional throttle and steering</li>
+            <li>Centre calibrated at power-on</li>
+            <li>Dead-zone means stop</li>
+            <li>Unplugged wire detected, motors cut</li>
+          </ul>
+        </article>
+        <article class="mode safety">
+          <div class="mode-top"><span class="label">Always on</span><span class="key" title="Command key">E</span></div>
+          <h3>Safety layer</h3>
+          <ul>
+            <li>Emergency stop from any mode, no ramp</li>
+            <li>Debounced low-battery cut-off</li>
+            <li>Validated sensor readings</li>
+            <li>Faults latch until cleared</li>
+          </ul>
+        </article>
+        <article class="mode">
+          <div class="mode-top"><span class="label">Diagnostics</span><span class="key" title="Command key">?</span></div>
+          <h3>Status and debug</h3>
+          <ul>
+            <li>Status line to phone and laptop</li>
+            <li>LED blink count shows the mode</li>
+            <li>Seven bench test sketches</li>
+          </ul>
+        </article>
+      </div>
+      <div class="share">
+        <span class="label">Shared architecture</span>
+        <div>
+          <p>Bluetooth keys and the joystick produce the same left/right wheel command through the same mixing function, then pass the same safety filter. Only the input layer differs, so a wireless handheld controller can be added later without touching the motor code.</p>
+          <div class="flow"><pre>CommandInput (BT + USB) ─┐
+JoystickInput ───────────┤
+LineSensors → LineFollower ┼─► ModeManager ─► safety filter ─► Motors ─► L298N
+Ultrasonic + Servo → ObstacleAvoider ┘   (sole owner)        (ramping)
+Battery ─────────────────────────────────────┘</pre></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="stack">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Hardware and software</span>
+        <h2>Stack</h2>
+      </div>
+      <div class="stack">
+        <div>
+          <h3>Hardware</h3>
+          <table>
+            <thead><tr><th>Part</th><th>Role</th></tr></thead>
+            <tbody>
+              <tr><td>Arduino UNO R3</td><td>Runs all firmware</td></tr>
+              <tr><td>L298N</td><td>Switches battery current to the motors</td></tr>
+              <tr><td>4 × TT motors</td><td>Skid-steer drive</td></tr>
+              <tr><td>HC-SR04 + SG90</td><td>Distance, panned left/right</td></tr>
+              <tr><td>3 × TCRT5000</td><td>Line detection</td></tr>
+              <tr><td>HC-05</td><td>Phone link (HM-10 for iPhone)</td></tr>
+              <tr><td>KY-023</td><td>Optional tethered joystick</td></tr>
+              <tr><td>2S 18650 pack</td><td>7.4 V supply via switch and fuse</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h3>Software</h3>
+          <table>
+            <thead><tr><th>Tool</th><th>Use</th></tr></thead>
+            <tbody>
+              <tr><td>Arduino C++</td><td>Firmware, built-in libraries only</td></tr>
+              <tr><td>Arduino IDE 2</td><td>Build and upload (macOS, Apple Silicon)</td></tr>
+              <tr><td>g++ / clang++</td><td>Host build against a mock Arduino core</td></tr>
+              <tr><td>Custom test harness</td><td>92 logic checks with simulated sensors</td></tr>
+              <tr><td>Wokwi</td><td>Browser simulation with LED stand-ins</td></tr>
+              <tr><td>Python</td><td>Generates the circuit diagram</td></tr>
+              <tr><td>Git + GitHub</td><td>Version control and documentation</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="circuit">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Circuit diagram</span>
+        <div style="display:grid;gap:12px">
+          <h2>Wiring</h2>
+          <p>One battery feeds the motor driver and the Arduino's regulator through a switch and fuse. Every ground is joined. Motor speed runs on Timer0 pins so the servo library can't disturb it.</p>
+        </div>
+      </div>
+      <div class="plate">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1460 1000" role="img" aria-label="Wiring schematic of the 4WD Robot Car" font-family="Inter, Helvetica, Arial, sans-serif">
+<style>
+.t{font-size:15px;font-weight:700;fill:#14213d}
+.s{font-size:11.5px;fill:#5c677d}
+.p{font-size:11.5px;fill:#14213d;font-family:"JetBrains Mono",Menlo,monospace}
+.n{font-size:11.5px;font-weight:700;paint-order:stroke;stroke:#fff;stroke-width:4px;font-family:"JetBrains Mono",Menlo,monospace}
+.h{font-size:22px;font-weight:800;fill:#14213d}
+.c{font-size:12px;fill:#5c677d}
+</style>
+<rect width="1460" height="1000" fill="#ffffff"/>
+<text x="40" y="48" class="h" text-anchor="start">4WD Robot Car — wiring schematic</text>
+<text x="40" y="70" class="c" text-anchor="start">Arduino UNO · L298N · HC-SR04 on SG90 · 3× IR line sensors · HC-05 · KY-023 (optional) · 2S 18650. Pins match firmware/RobotCar/Config.h. Design drawing — not yet verified on hardware.</text>
+<rect x="540" y="150" width="230" height="640" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="655.0" y="172" class="t">Arduino UNO R3</text>
+<text text-anchor="middle" x="655.0" y="190" class="s">ATmega328P · 5 V logic</text>
+<circle cx="770" cy="230" r="3.5" fill="#14213d"/>
+<text x="759" y="234" class="p" text-anchor="end">D2</text>
+<circle cx="770" cy="270" r="3.5" fill="#14213d"/>
+<text x="759" y="274" class="p" text-anchor="end">D3</text>
+<circle cx="770" cy="310" r="3.5" fill="#14213d"/>
+<text x="759" y="314" class="p" text-anchor="end">D4</text>
+<circle cx="770" cy="350" r="3.5" fill="#14213d"/>
+<text x="759" y="354" class="p" text-anchor="end">D5 ~</text>
+<circle cx="770" cy="390" r="3.5" fill="#14213d"/>
+<text x="759" y="394" class="p" text-anchor="end">D6 ~</text>
+<circle cx="770" cy="430" r="3.5" fill="#14213d"/>
+<text x="759" y="434" class="p" text-anchor="end">D7</text>
+<circle cx="770" cy="470" r="3.5" fill="#14213d"/>
+<text x="759" y="474" class="p" text-anchor="end">D8</text>
+<circle cx="770" cy="510" r="3.5" fill="#14213d"/>
+<text x="759" y="514" class="p" text-anchor="end">D9 ~</text>
+<circle cx="770" cy="550" r="3.5" fill="#14213d"/>
+<text x="759" y="554" class="p" text-anchor="end">D10</text>
+<circle cx="770" cy="590" r="3.5" fill="#14213d"/>
+<text x="759" y="594" class="p" text-anchor="end">D11</text>
+<circle cx="770" cy="630" r="3.5" fill="#14213d"/>
+<text x="759" y="634" class="p" text-anchor="end">D12</text>
+<circle cx="770" cy="670" r="3.5" fill="#14213d"/>
+<text x="759" y="674" class="p" text-anchor="end">D13</text>
+<circle cx="540" cy="450" r="3.5" fill="#14213d"/>
+<text x="551" y="454" class="p" text-anchor="start">A0</text>
+<circle cx="540" cy="490" r="3.5" fill="#14213d"/>
+<text x="551" y="494" class="p" text-anchor="start">A1</text>
+<circle cx="540" cy="530" r="3.5" fill="#14213d"/>
+<text x="551" y="534" class="p" text-anchor="start">A2</text>
+<circle cx="540" cy="570" r="3.5" fill="#14213d"/>
+<text x="551" y="574" class="p" text-anchor="start">A3</text>
+<circle cx="540" cy="610" r="3.5" fill="#14213d"/>
+<text x="551" y="614" class="p" text-anchor="start">A4</text>
+<circle cx="540" cy="650" r="3.5" fill="#14213d"/>
+<text x="551" y="654" class="p" text-anchor="start">A5</text>
+<circle cx="540" cy="270" r="3.5" fill="#14213d"/>
+<text x="551" y="274" class="p" text-anchor="start">D0/D1 USB</text>
+<text x="552" y="292" class="s" text-anchor="start">reserved: upload + debug</text>
+<circle cx="590" cy="790" r="3.5" fill="#14213d"/>
+<text text-anchor="middle" x="590" y="782" class="p">VIN</text>
+<circle cx="655" cy="790" r="3.5" fill="#14213d"/>
+<text text-anchor="middle" x="655" y="782" class="p">5V</text>
+<circle cx="720" cy="790" r="3.5" fill="#14213d"/>
+<text text-anchor="middle" x="720" y="782" class="p">GND</text>
+<text x="756" y="692" class="s" text-anchor="end">on-board LED "L"</text>
+<rect x="1000" y="120" width="190" height="320" rx="8" fill="#fff4f4" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="1095.0" y="142" class="t">L298N</text>
+<text text-anchor="middle" x="1095.0" y="160" class="s">dual H-bridge · ~2 A/ch</text>
+<circle cx="1000" cy="200" r="3.5" fill="#14213d"/>
+<text x="1011" y="204" class="p" text-anchor="start">ENA</text>
+<circle cx="1000" cy="236" r="3.5" fill="#14213d"/>
+<text x="1011" y="240" class="p" text-anchor="start">IN1</text>
+<circle cx="1000" cy="272" r="3.5" fill="#14213d"/>
+<text x="1011" y="276" class="p" text-anchor="start">IN2</text>
+<circle cx="1000" cy="308" r="3.5" fill="#14213d"/>
+<text x="1011" y="312" class="p" text-anchor="start">IN3</text>
+<circle cx="1000" cy="344" r="3.5" fill="#14213d"/>
+<text x="1011" y="348" class="p" text-anchor="start">IN4</text>
+<circle cx="1000" cy="380" r="3.5" fill="#14213d"/>
+<text x="1011" y="384" class="p" text-anchor="start">ENB</text>
+<text text-anchor="middle" x="1095.0" y="400" class="s">remove ENA/ENB jumpers</text>
+<circle cx="1190" cy="210" r="3.5" fill="#14213d"/>
+<text x="1179" y="214" class="p" text-anchor="end">OUT1</text>
+<circle cx="1190" cy="250" r="3.5" fill="#14213d"/>
+<text x="1179" y="254" class="p" text-anchor="end">OUT2</text>
+<circle cx="1190" cy="320" r="3.5" fill="#14213d"/>
+<text x="1179" y="324" class="p" text-anchor="end">OUT3</text>
+<circle cx="1190" cy="360" r="3.5" fill="#14213d"/>
+<text x="1179" y="364" class="p" text-anchor="end">OUT4</text>
+<circle cx="1040" cy="440" r="3.5" fill="#14213d"/>
+<text text-anchor="middle" x="1040" y="432" class="p">+12V (VS)</text>
+<circle cx="1105" cy="440" r="3.5" fill="#14213d"/>
+<text text-anchor="middle" x="1105" y="432" class="p">GND</text>
+<circle cx="1160" cy="440" r="3.5" fill="#14213d"/>
+<text text-anchor="middle" x="1160" y="432" class="p">5V</text>
+<text text-anchor="middle" x="1095.0" y="416" class="s">5V pin: leave unconnected</text>
+<circle cx="1300" cy="160" r="26" fill="#fff" stroke="#14213d" stroke-width="2"/><text text-anchor="middle" x="1300" y="165" class="t">M1</text>
+<text x="1336" y="164" class="s" text-anchor="start">front-left</text>
+<circle cx="1300" cy="250" r="26" fill="#fff" stroke="#14213d" stroke-width="2"/><text text-anchor="middle" x="1300" y="255" class="t">M2</text>
+<text x="1336" y="254" class="s" text-anchor="start">rear-left</text>
+<circle cx="1300" cy="345" r="26" fill="#fff" stroke="#14213d" stroke-width="2"/><text text-anchor="middle" x="1300" y="350" class="t">M3</text>
+<text x="1336" y="349" class="s" text-anchor="start">front-right</text>
+<circle cx="1300" cy="435" r="26" fill="#fff" stroke="#14213d" stroke-width="2"/><text text-anchor="middle" x="1300" y="440" class="t">M4</text>
+<text x="1336" y="439" class="s" text-anchor="start">rear-right</text>
+<polyline points="1190,210 1236,210 1236,151 1276,151" fill="none" stroke="#d62828" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1236,241 1276,241" fill="none" stroke="#d62828" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1236,210 1236,241" fill="none" stroke="#d62828" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="1236" cy="210" r="4" fill="#14213d"/>
+<polyline points="1190,250 1252,250 1252,169 1276,169" fill="none" stroke="#14213d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1252,250 1252,259 1276,259" fill="none" stroke="#14213d" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="1252" cy="250" r="4" fill="#14213d"/>
+<polyline points="1190,320 1236,320 1236,336 1276,336" fill="none" stroke="#d62828" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1236,426 1276,426" fill="none" stroke="#d62828" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1236,320 1236,426" fill="none" stroke="#d62828" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="1236" cy="320" r="4" fill="#14213d"/>
+<polyline points="1190,360 1252,360 1252,354 1276,354" fill="none" stroke="#14213d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1252,360 1252,444 1276,444" fill="none" stroke="#14213d" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="1252" cy="360" r="4" fill="#14213d"/>
+<text x="1450" y="108" class="s" text-anchor="end">left pair ∥ OUT1/2 · right pair ∥ OUT3/4</text>
+<text x="1450" y="472" class="s" text-anchor="end">100 nF across each motor</text>
+<polyline points="770,350 830,350 830,200 1000,200" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,310 852,310 852,236 1000,236" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,430 874,430 874,272 1000,272" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,470 896,470 896,308 1000,308" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,550 918,550 918,344 1000,344" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,390 940,390 940,380 1000,380" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="1000" y="500" width="190" height="100" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="1095.0" y="522" class="t">HC-SR04</text>
+<text text-anchor="middle" x="1095.0" y="540" class="s">ultrasonic, front</text>
+<circle cx="1000" cy="560" r="3.5" fill="#14213d"/>
+<text x="1011" y="564" class="p" text-anchor="start">TRIG</text>
+<circle cx="1000" cy="584" r="3.5" fill="#14213d"/>
+<text x="1011" y="588" class="p" text-anchor="start">ECHO</text>
+<text x="1182" y="588" class="n" fill="#e07a00" text-anchor="end">VCC +5V</text>
+<path d="M1175,600 v8 M1167,608 h16 M1170,612 h10 M1173,616 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="770,590 965,590 965,560 1000,560" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,630 980,630 980,584 1000,584" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="1000" y="640" width="190" height="70" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="1095.0" y="662" class="t">SG90 servo</text>
+<text text-anchor="middle" x="1095.0" y="680" class="s">pans the HC-SR04</text>
+<circle cx="1000" cy="690" r="3.5" fill="#14213d"/>
+<text x="1011" y="694" class="p" text-anchor="start">SIG</text>
+<text x="1160" y="694" class="n" fill="#e07a00" text-anchor="end">V+ +5V*</text>
+<path d="M1175,710 v8 M1167,718 h16 M1170,722 h10 M1173,726 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="770,510 950,510 950,690 1000,690" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="1000" y="740" width="190" height="110" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="1095.0" y="762" class="t">HC-05</text>
+<text text-anchor="middle" x="1095.0" y="780" class="s">Bluetooth Classic (Android)</text>
+<circle cx="1000" cy="800" r="3.5" fill="#14213d"/>
+<text x="1011" y="804" class="p" text-anchor="start">TXD</text>
+<circle cx="1000" cy="832" r="3.5" fill="#14213d"/>
+<text x="1011" y="836" class="p" text-anchor="start">RXD 3.3V</text>
+<text x="1182" y="836" class="n" fill="#e07a00" text-anchor="end">VCC +5V</text>
+<path d="M1175,850 v8 M1167,858 h16 M1170,862 h10 M1173,866 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="770,230 800,230 800,800 1000,800" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,270 815,270 815,832 880,832" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="880" y="824" width="40" height="16" fill="#fff" stroke="#14213d" stroke-width="1.6"/><text text-anchor="middle" x="900" y="818" class="p">1 kΩ</text>
+<polyline points="920,832 1000,832" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="950" cy="832" r="4" fill="#14213d"/>
+<polyline points="950,832 950,842" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="942" y="842" width="16" height="30" fill="#fff" stroke="#14213d" stroke-width="1.6"/><text x="964" y="862" class="p" text-anchor="start">2 kΩ</text>
+<path d="M950,872 v8 M942,880 h16 M945,884 h10 M948,888 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<rect x="150" y="120" width="190" height="70" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="245.0" y="142" class="t">IR line LEFT</text>
+<text text-anchor="middle" x="245.0" y="160" class="s">TCRT5000 module · DO</text>
+<circle cx="340" cy="170" r="3.5" fill="#14213d"/>
+<text x="329" y="174" class="p" text-anchor="end">DO</text>
+<text x="142" y="154" class="n" fill="#e07a00" text-anchor="end">+5V</text>
+<path d="M165,190 v8 M157,198 h16 M160,202 h10 M163,206 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="340,170 380,170 380,450 540,450" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="150" y="212" width="190" height="70" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="245.0" y="234" class="t">IR line CENTRE</text>
+<text text-anchor="middle" x="245.0" y="252" class="s">TCRT5000 module · DO</text>
+<circle cx="340" cy="262" r="3.5" fill="#14213d"/>
+<text x="329" y="266" class="p" text-anchor="end">DO</text>
+<text x="142" y="246" class="n" fill="#e07a00" text-anchor="end">+5V</text>
+<path d="M165,282 v8 M157,290 h16 M160,294 h10 M163,298 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="340,262 402,262 402,490 540,490" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="150" y="304" width="190" height="70" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="245.0" y="326" class="t">IR line RIGHT</text>
+<text text-anchor="middle" x="245.0" y="344" class="s">TCRT5000 module · DO</text>
+<circle cx="340" cy="354" r="3.5" fill="#14213d"/>
+<text x="329" y="358" class="p" text-anchor="end">DO</text>
+<text x="142" y="338" class="n" fill="#e07a00" text-anchor="end">+5V</text>
+<path d="M165,374 v8 M157,382 h16 M160,386 h10 M163,390 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="340,354 424,354 424,530 540,530" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="150" y="420" width="190" height="100" rx="8" fill="#f2fbfb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="245.0" y="442" class="t">KY-023 joystick</text>
+<text text-anchor="middle" x="245.0" y="460" class="s">optional · tethered</text>
+<circle cx="340" cy="475" r="3.5" fill="#14213d"/>
+<text x="329" y="479" class="p" text-anchor="end">VRx</text>
+<circle cx="340" cy="500" r="3.5" fill="#14213d"/>
+<text x="329" y="504" class="p" text-anchor="end">VRy</text>
+<text x="142" y="464" class="n" fill="#e07a00" text-anchor="end">+5V</text>
+<path d="M165,520 v8 M157,528 h16 M160,532 h10 M163,536 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="340,475 450,475 450,570 540,570" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4"/>
+<polyline points="340,500 470,500 470,610 540,610" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4"/>
+<rect x="488" y="668" width="16" height="34" fill="#fff" stroke="#14213d" stroke-width="1.6"/>
+<text x="480" y="690" class="p" text-anchor="end">10 kΩ</text>
+<rect x="488" y="724" width="16" height="34" fill="#fff" stroke="#14213d" stroke-width="1.6"/>
+<text x="480" y="746" class="p" text-anchor="end">10 kΩ</text>
+<polyline points="540,650 496,650 496,668" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="496,702 496,724" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<path d="M496,758 v8 M488,766 h16 M491,770 h10 M494,774 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="496,668 496,660" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<text x="470" y="656" class="n" fill="#d62828" text-anchor="end">VBAT →</text>
+<rect x="150" y="820" width="200" height="100" rx="8" fill="#fff4f4" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="250.0" y="842" class="t">2S 18650 pack</text>
+<text text-anchor="middle" x="250.0" y="860" class="s">7.4 V nom · 8.4 V full</text>
+<circle cx="350" cy="860" r="3.5" fill="#14213d"/>
+<text x="339" y="864" class="p" text-anchor="end">+</text>
+<circle cx="350" cy="895" r="3.5" fill="#14213d"/>
+<text x="339" y="899" class="p" text-anchor="end">−</text>
+<polyline points="350,860 390,860" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="394" cy="860" r="4" fill="none" stroke="#d62828" stroke-width="2"/><line x1="398" y1="860" x2="428" y2="846" stroke="#d62828" stroke-width="3"/><circle cx="432" cy="860" r="4" fill="none" stroke="#d62828" stroke-width="2"/>
+<text text-anchor="middle" x="412" y="836" class="p">SWITCH</text>
+<polyline points="436,860 455,860" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<rect x="455" y="852" width="40" height="16" rx="8" fill="#fff" stroke="#d62828" stroke-width="2"/><text text-anchor="middle" x="475" y="886" class="p">3 A fuse</text>
+<polyline points="495,860 520,860 590,860 590,790" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="520,860 520,965 1205,965 1205,470 1040,470 1040,440" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="520" cy="860" r="4" fill="#14213d"/>
+<text x="1199" y="960" class="n" fill="#d62828" text-anchor="end">VBAT 7–8.4 V</text>
+<text x="1008" y="490" class="s" text-anchor="start">470 µF across VS–GND</text>
+<polyline points="350,895 720,895 720,790" fill="none" stroke="#14213d" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="720,895 720,945 1222,945 1222,455 1105,455 1105,440" fill="none" stroke="#14213d" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="720" cy="895" r="4" fill="#14213d"/>
+<text x="730" y="938" class="n" fill="#14213d" text-anchor="start">COMMON GROUND: battery −, UNO, L298N, every module</text>
+<polyline points="655,790 655,812" fill="none" stroke="#e07a00" stroke-width="3" stroke-linejoin="round"/>
+<text x="648" y="810" class="n" fill="#e07a00" text-anchor="end">+5V → all modules</text>
+<text x="160" y="580" class="t" text-anchor="start">Legend</text>
+<polyline points="160,602 194,602" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<text x="204" y="606" class="s" text-anchor="start">battery / motor power</text>
+<polyline points="160,622 194,622" fill="none" stroke="#14213d" stroke-width="3" stroke-linejoin="round"/>
+<text x="204" y="626" class="s" text-anchor="start">ground</text>
+<polyline points="160,642 194,642" fill="none" stroke="#e07a00" stroke-width="3" stroke-linejoin="round"/>
+<text x="204" y="646" class="s" text-anchor="start">+5 V logic</text>
+<polyline points="160,662 194,662" fill="none" stroke="#0f8b8d" stroke-width="3" stroke-linejoin="round"/>
+<text x="204" y="666" class="s" text-anchor="start">signal</text>
+<polyline points="160,682 194,682" fill="none" stroke="#0f8b8d" stroke-width="3" stroke-linejoin="round" stroke-dasharray="6 4"/>
+<text x="204" y="686" class="s" text-anchor="start">optional (joystick)</text>
+<text x="160" y="712" class="s" text-anchor="start">* servo: separate 5 V regulator if resets</text>
+</svg>
+      </div>
+      <div class="plate-cap"><span>Schematic generated from the pin plan · design drawing, not yet verified on hardware</span><span class="mono">docs/circuit-diagram.svg</span></div>
+      <div class="pins">
+        <table>
+          <thead><tr><th>Pin</th><th>Function</th><th>Pin</th><th>Function</th><th>Pin</th><th>Function</th></tr></thead>
+          <tbody>
+            <tr><td>D2</td><td>BT RX ← HC-05</td><td>D8</td><td>IN3</td><td>A0</td><td>Line left</td></tr>
+            <tr><td>D3</td><td>BT TX → divider</td><td>D9</td><td>Servo</td><td>A1</td><td>Line centre</td></tr>
+            <tr><td>D4</td><td>IN1</td><td>D10</td><td>IN4</td><td>A2</td><td>Line right</td></tr>
+            <tr><td>D5</td><td>ENA (PWM)</td><td>D11</td><td>Sonar trig</td><td>A3</td><td>Joystick X</td></tr>
+            <tr><td>D6</td><td>ENB (PWM)</td><td>D12</td><td>Sonar echo</td><td>A4</td><td>Joystick Y</td></tr>
+            <tr><td>D7</td><td>IN2</td><td>D13</td><td>Status LED</td><td>A5</td><td>Battery sense</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Development process</span>
+        <div style="display:grid;gap:12px">
+          <h2>Build log</h2>
+          <p>Design and simulate first, then bring up the hardware one subsystem at a time, each with its own test sketch.</p>
+        </div>
+      </div>
+      <ol class="log">
+        <li><span class="n">01</span><div><h3>System design</h3><p>Architecture, component audit, electrical checks, pin and timer plan.</p></div><span class="chip done">Done</span></li>
+        <li><span class="n">02</span><div><h3>Wiring and schematic</h3><p>Power distribution, grounding, motor driver and sensor connections.</p></div><span class="chip done">Done</span></li>
+        <li><span class="n">03</span><div><h3>Firmware</h3><p>Twelve modules: motors, sensors, behaviours, inputs, mode manager, safety.</p></div><span class="chip done">Done</span></li>
+        <li><span class="n">04</span><div><h3>Simulation</h3><p>Firmware compiled against a mock Arduino core; 92 logic checks pass.</p></div><span class="chip done">Done</span></li>
+        <li><span class="n">05</span><div><h3>Assembly</h3><p>Solder motors, mount chassis, wire power, then sensors.</p></div><span class="chip wait">Next</span></li>
+        <li><span class="n">06</span><div><h3>Bench bring-up</h3><p>Seven test sketches with the wheels off the ground: motors, line, sonar, servo, Bluetooth, joystick, battery.</p></div><span class="chip wait">Pending</span></li>
+        <li><span class="n">07</span><div><h3>Tuning on the floor</h3><p>Line speeds, stop distance, turn time, minimum PWM.</p></div><span class="chip wait">Pending</span></li>
+        <li><span class="n">08</span><div><h3>Demonstration</h3><p>Record each mode and publish measured results here.</p></div><span class="chip wait">Pending</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="demo">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Demonstration</span>
+        <h2>Video and photos</h2>
+      </div>
+      <div class="demo">
+        <div class="ph ph-wide" role="img" aria-label="Placeholder for demonstration video">
+          <div class="tag"><strong>Demo video · placeholder</strong><span>Not recorded yet. Add the video of all three modes after physical testing (media/demo.mp4 or a YouTube link).</span></div>
+        </div>
+        <div class="gallery">
+          <div class="ph ph-sq" role="img" aria-label="Placeholder for top-view photo"><div class="tag"><strong>Top view · placeholder</strong><span>media/top.jpg</span></div></div>
+          <div class="ph ph-sq" role="img" aria-label="Placeholder for wiring close-up photo"><div class="tag"><strong>Wiring close-up · placeholder</strong><span>media/wiring.jpg</span></div></div>
+        </div>
+      </div>
+      <div class="demo-list">
+        <div><h3>Line following</h3><p>Oval track of 19 mm tape, a gap, and a box placed on the line.</p></div>
+        <div><h3>Obstacle avoidance</h3><p>Drive at a wall, scan, turn to the open side, carry on.</p></div>
+        <div><h3>Phone control</h3><p>Drive, change speed, collision guard, and switching the phone's Bluetooth off mid-drive.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="repo">
+    <div class="wrap repo">
+      <h2>Firmware, tests and docs</h2>
+      <div class="repo-box">
+        <a class="btn" href="https://github.com/YOUR-USERNAME/4WD-Robot-Car">View on GitHub →</a>
+        <div class="url">github.com/YOUR-USERNAME/4WD-Robot-Car</div>
+        <div class="tree">firmware/RobotCar/ · firmware-tests/ · simulation/ · docs/ · website/</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>4WD Robot Car · Project 04 · Robotics</span>
+    <span>Logic verified in simulation. Physical results appear here after testing.</span>
+  </div>
+</footer>
+
+<script>
+// Topographic contours: marching squares over a smooth field. Drawn once
+// per size; static, so nothing to disable for reduced motion.
+(function () {
+  const canvas = document.getElementById('contours');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  function field(x, y) {
+    return Math.sin(x * 0.0061 + 1.3) * Math.cos(y * 0.0083 - 0.4) * 1.0 +
+           Math.sin((x + y) * 0.0042 + 2.1) * 0.8 +
+           Math.cos(x * 0.0115 - y * 0.0047 + 0.7) * 0.45 +
+           Math.sin(Math.hypot(x - 900, y - 160) * 0.0105) * 0.55;
+  }
+  function draw() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, rect.width, rect.height);
+    const css = getComputedStyle(document.documentElement);
+    const ink = css.getPropertyValue('--contour').trim();
+    const acc = css.getPropertyValue('--contour-accent').trim();
+    const step = 10, cols = Math.ceil(rect.width / step) + 1, rows = Math.ceil(rect.height / step) + 1;
+    const v = new Float32Array(cols * rows);
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) v[j * cols + i] = field(i * step, j * step);
+    const levels = 22, lo = -2.6, hi = 2.6;
+    for (let k = 1; k < levels; k++) {
+      const t = lo + (hi - lo) * k / levels;
+      const major = k % 5 === 0;
+      ctx.strokeStyle = major ? `rgba(${acc},0.30)` : `rgba(${ink},0.085)`;
+      ctx.lineWidth = major ? 1.1 : 0.8;
+      ctx.beginPath();
+      for (let j = 0; j < rows - 1; j++) for (let i = 0; i < cols - 1; i++) {
+        const a = v[j * cols + i], b = v[j * cols + i + 1], c = v[(j + 1) * cols + i + 1], d = v[(j + 1) * cols + i];
+        const idx = (a > t) | ((b > t) << 1) | ((c > t) << 2) | ((d > t) << 3);
+        if (idx === 0 || idx === 15) continue;
+        const x = i * step, y = j * step;
+        const e = [
+          [x + step * (t - a) / (b - a), y],
+          [x + step, y + step * (t - b) / (c - b)],
+          [x + step * (t - d) / (c - d), y + step],
+          [x, y + step * (t - a) / (d - a)]
+        ];
+        const segs = {1:[[3,0]],2:[[0,1]],3:[[3,1]],4:[[1,2]],5:[[3,0],[1,2]],6:[[0,2]],7:[[3,2]],
+                      8:[[2,3]],9:[[0,2]],10:[[0,1],[2,3]],11:[[1,2]],12:[[1,3]],13:[[0,1]],14:[[3,0]]}[idx];
+        for (const [p, q] of segs) { ctx.moveTo(e[p][0], e[p][1]); ctx.lineTo(e[q][0], e[q][1]); }
+      }
+      ctx.stroke();
+    }
+  }
+  let timer;
+  draw();
+  window.addEventListener('resize', () => { clearTimeout(timer); timer = setTimeout(draw, 150); });
+  if (window.matchMedia) {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) mq.addEventListener('change', draw);
+  }
+  new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+</script>
+</body>
+</html>

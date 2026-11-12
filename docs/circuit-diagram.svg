@@ -1,0 +1,238 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1460 1000" width="1460" height="1000" font-family="Inter, Helvetica, Arial, sans-serif">
+<style>
+.t{font-size:15px;font-weight:700;fill:#14213d}
+.s{font-size:11.5px;fill:#5c677d}
+.p{font-size:11.5px;fill:#14213d;font-family:"JetBrains Mono",Menlo,monospace}
+.n{font-size:11.5px;font-weight:700;paint-order:stroke;stroke:#fff;stroke-width:4px;font-family:"JetBrains Mono",Menlo,monospace}
+.h{font-size:22px;font-weight:800;fill:#14213d}
+.c{font-size:12px;fill:#5c677d}
+</style>
+<rect width="1460" height="1000" fill="#ffffff"/>
+<text x="40" y="48" class="h" text-anchor="start">4WD Robot Car — wiring schematic</text>
+<text x="40" y="70" class="c" text-anchor="start">Arduino UNO · L298N · HC-SR04 on SG90 · 3× IR line sensors · HC-05 · KY-023 (optional) · 2S 18650. Pins match firmware/RobotCar/Config.h. Design drawing — not yet verified on hardware.</text>
+<rect x="540" y="150" width="230" height="640" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="655.0" y="172" class="t">Arduino UNO R3</text>
+<text text-anchor="middle" x="655.0" y="190" class="s">ATmega328P · 5 V logic</text>
+<circle cx="770" cy="230" r="3.5" fill="#14213d"/>
+<text x="759" y="234" class="p" text-anchor="end">D2</text>
+<circle cx="770" cy="270" r="3.5" fill="#14213d"/>
+<text x="759" y="274" class="p" text-anchor="end">D3</text>
+<circle cx="770" cy="310" r="3.5" fill="#14213d"/>
+<text x="759" y="314" class="p" text-anchor="end">D4</text>
+<circle cx="770" cy="350" r="3.5" fill="#14213d"/>
+<text x="759" y="354" class="p" text-anchor="end">D5 ~</text>
+<circle cx="770" cy="390" r="3.5" fill="#14213d"/>
+<text x="759" y="394" class="p" text-anchor="end">D6 ~</text>
+<circle cx="770" cy="430" r="3.5" fill="#14213d"/>
+<text x="759" y="434" class="p" text-anchor="end">D7</text>
+<circle cx="770" cy="470" r="3.5" fill="#14213d"/>
+<text x="759" y="474" class="p" text-anchor="end">D8</text>
+<circle cx="770" cy="510" r="3.5" fill="#14213d"/>
+<text x="759" y="514" class="p" text-anchor="end">D9 ~</text>
+<circle cx="770" cy="550" r="3.5" fill="#14213d"/>
+<text x="759" y="554" class="p" text-anchor="end">D10</text>
+<circle cx="770" cy="590" r="3.5" fill="#14213d"/>
+<text x="759" y="594" class="p" text-anchor="end">D11</text>
+<circle cx="770" cy="630" r="3.5" fill="#14213d"/>
+<text x="759" y="634" class="p" text-anchor="end">D12</text>
+<circle cx="770" cy="670" r="3.5" fill="#14213d"/>
+<text x="759" y="674" class="p" text-anchor="end">D13</text>
+<circle cx="540" cy="450" r="3.5" fill="#14213d"/>
+<text x="551" y="454" class="p" text-anchor="start">A0</text>
+<circle cx="540" cy="490" r="3.5" fill="#14213d"/>
+<text x="551" y="494" class="p" text-anchor="start">A1</text>
+<circle cx="540" cy="530" r="3.5" fill="#14213d"/>
+<text x="551" y="534" class="p" text-anchor="start">A2</text>
+<circle cx="540" cy="570" r="3.5" fill="#14213d"/>
+<text x="551" y="574" class="p" text-anchor="start">A3</text>
+<circle cx="540" cy="610" r="3.5" fill="#14213d"/>
+<text x="551" y="614" class="p" text-anchor="start">A4</text>
+<circle cx="540" cy="650" r="3.5" fill="#14213d"/>
+<text x="551" y="654" class="p" text-anchor="start">A5</text>
+<circle cx="540" cy="270" r="3.5" fill="#14213d"/>
+<text x="551" y="274" class="p" text-anchor="start">D0/D1 USB</text>
+<text x="552" y="292" class="s" text-anchor="start">reserved: upload + debug</text>
+<circle cx="590" cy="790" r="3.5" fill="#14213d"/>
+<text text-anchor="middle" x="590" y="782" class="p">VIN</text>
+<circle cx="655" cy="790" r="3.5" fill="#14213d"/>
+<text text-anchor="middle" x="655" y="782" class="p">5V</text>
+<circle cx="720" cy="790" r="3.5" fill="#14213d"/>
+<text text-anchor="middle" x="720" y="782" class="p">GND</text>
+<text x="756" y="692" class="s" text-anchor="end">on-board LED "L"</text>
+<rect x="1000" y="120" width="190" height="320" rx="8" fill="#fff4f4" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="1095.0" y="142" class="t">L298N</text>
+<text text-anchor="middle" x="1095.0" y="160" class="s">dual H-bridge · ~2 A/ch</text>
+<circle cx="1000" cy="200" r="3.5" fill="#14213d"/>
+<text x="1011" y="204" class="p" text-anchor="start">ENA</text>
+<circle cx="1000" cy="236" r="3.5" fill="#14213d"/>
+<text x="1011" y="240" class="p" text-anchor="start">IN1</text>
+<circle cx="1000" cy="272" r="3.5" fill="#14213d"/>
+<text x="1011" y="276" class="p" text-anchor="start">IN2</text>
+<circle cx="1000" cy="308" r="3.5" fill="#14213d"/>
+<text x="1011" y="312" class="p" text-anchor="start">IN3</text>
+<circle cx="1000" cy="344" r="3.5" fill="#14213d"/>
+<text x="1011" y="348" class="p" text-anchor="start">IN4</text>
+<circle cx="1000" cy="380" r="3.5" fill="#14213d"/>
+<text x="1011" y="384" class="p" text-anchor="start">ENB</text>
+<text text-anchor="middle" x="1095.0" y="400" class="s">remove ENA/ENB jumpers</text>
+<circle cx="1190" cy="210" r="3.5" fill="#14213d"/>
+<text x="1179" y="214" class="p" text-anchor="end">OUT1</text>
+<circle cx="1190" cy="250" r="3.5" fill="#14213d"/>
+<text x="1179" y="254" class="p" text-anchor="end">OUT2</text>
+<circle cx="1190" cy="320" r="3.5" fill="#14213d"/>
+<text x="1179" y="324" class="p" text-anchor="end">OUT3</text>
+<circle cx="1190" cy="360" r="3.5" fill="#14213d"/>
+<text x="1179" y="364" class="p" text-anchor="end">OUT4</text>
+<circle cx="1040" cy="440" r="3.5" fill="#14213d"/>
+<text text-anchor="middle" x="1040" y="432" class="p">+12V (VS)</text>
+<circle cx="1105" cy="440" r="3.5" fill="#14213d"/>
+<text text-anchor="middle" x="1105" y="432" class="p">GND</text>
+<circle cx="1160" cy="440" r="3.5" fill="#14213d"/>
+<text text-anchor="middle" x="1160" y="432" class="p">5V</text>
+<text text-anchor="middle" x="1095.0" y="416" class="s">5V pin: leave unconnected</text>
+<circle cx="1300" cy="160" r="26" fill="#fff" stroke="#14213d" stroke-width="2"/><text text-anchor="middle" x="1300" y="165" class="t">M1</text>
+<text x="1336" y="164" class="s" text-anchor="start">front-left</text>
+<circle cx="1300" cy="250" r="26" fill="#fff" stroke="#14213d" stroke-width="2"/><text text-anchor="middle" x="1300" y="255" class="t">M2</text>
+<text x="1336" y="254" class="s" text-anchor="start">rear-left</text>
+<circle cx="1300" cy="345" r="26" fill="#fff" stroke="#14213d" stroke-width="2"/><text text-anchor="middle" x="1300" y="350" class="t">M3</text>
+<text x="1336" y="349" class="s" text-anchor="start">front-right</text>
+<circle cx="1300" cy="435" r="26" fill="#fff" stroke="#14213d" stroke-width="2"/><text text-anchor="middle" x="1300" y="440" class="t">M4</text>
+<text x="1336" y="439" class="s" text-anchor="start">rear-right</text>
+<polyline points="1190,210 1236,210 1236,151 1276,151" fill="none" stroke="#d62828" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1236,241 1276,241" fill="none" stroke="#d62828" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1236,210 1236,241" fill="none" stroke="#d62828" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="1236" cy="210" r="4" fill="#14213d"/>
+<polyline points="1190,250 1252,250 1252,169 1276,169" fill="none" stroke="#14213d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1252,250 1252,259 1276,259" fill="none" stroke="#14213d" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="1252" cy="250" r="4" fill="#14213d"/>
+<polyline points="1190,320 1236,320 1236,336 1276,336" fill="none" stroke="#d62828" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1236,426 1276,426" fill="none" stroke="#d62828" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1236,320 1236,426" fill="none" stroke="#d62828" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="1236" cy="320" r="4" fill="#14213d"/>
+<polyline points="1190,360 1252,360 1252,354 1276,354" fill="none" stroke="#14213d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="1252,360 1252,444 1276,444" fill="none" stroke="#14213d" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="1252" cy="360" r="4" fill="#14213d"/>
+<text x="1450" y="108" class="s" text-anchor="end">left pair ∥ OUT1/2 · right pair ∥ OUT3/4</text>
+<text x="1450" y="472" class="s" text-anchor="end">100 nF across each motor</text>
+<polyline points="770,350 830,350 830,200 1000,200" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,310 852,310 852,236 1000,236" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,430 874,430 874,272 1000,272" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,470 896,470 896,308 1000,308" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,550 918,550 918,344 1000,344" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,390 940,390 940,380 1000,380" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="1000" y="500" width="190" height="100" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="1095.0" y="522" class="t">HC-SR04</text>
+<text text-anchor="middle" x="1095.0" y="540" class="s">ultrasonic, front</text>
+<circle cx="1000" cy="560" r="3.5" fill="#14213d"/>
+<text x="1011" y="564" class="p" text-anchor="start">TRIG</text>
+<circle cx="1000" cy="584" r="3.5" fill="#14213d"/>
+<text x="1011" y="588" class="p" text-anchor="start">ECHO</text>
+<text x="1182" y="588" class="n" fill="#e07a00" text-anchor="end">VCC +5V</text>
+<path d="M1175,600 v8 M1167,608 h16 M1170,612 h10 M1173,616 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="770,590 965,590 965,560 1000,560" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,630 980,630 980,584 1000,584" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="1000" y="640" width="190" height="70" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="1095.0" y="662" class="t">SG90 servo</text>
+<text text-anchor="middle" x="1095.0" y="680" class="s">pans the HC-SR04</text>
+<circle cx="1000" cy="690" r="3.5" fill="#14213d"/>
+<text x="1011" y="694" class="p" text-anchor="start">SIG</text>
+<text x="1160" y="694" class="n" fill="#e07a00" text-anchor="end">V+ +5V*</text>
+<path d="M1175,710 v8 M1167,718 h16 M1170,722 h10 M1173,726 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="770,510 950,510 950,690 1000,690" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="1000" y="740" width="190" height="110" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="1095.0" y="762" class="t">HC-05</text>
+<text text-anchor="middle" x="1095.0" y="780" class="s">Bluetooth Classic (Android)</text>
+<circle cx="1000" cy="800" r="3.5" fill="#14213d"/>
+<text x="1011" y="804" class="p" text-anchor="start">TXD</text>
+<circle cx="1000" cy="832" r="3.5" fill="#14213d"/>
+<text x="1011" y="836" class="p" text-anchor="start">RXD 3.3V</text>
+<text x="1182" y="836" class="n" fill="#e07a00" text-anchor="end">VCC +5V</text>
+<path d="M1175,850 v8 M1167,858 h16 M1170,862 h10 M1173,866 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="770,230 800,230 800,800 1000,800" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="770,270 815,270 815,832 880,832" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="880" y="824" width="40" height="16" fill="#fff" stroke="#14213d" stroke-width="1.6"/><text text-anchor="middle" x="900" y="818" class="p">1 kΩ</text>
+<polyline points="920,832 1000,832" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<circle cx="950" cy="832" r="4" fill="#14213d"/>
+<polyline points="950,832 950,842" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="942" y="842" width="16" height="30" fill="#fff" stroke="#14213d" stroke-width="1.6"/><text x="964" y="862" class="p" text-anchor="start">2 kΩ</text>
+<path d="M950,872 v8 M942,880 h16 M945,884 h10 M948,888 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<rect x="150" y="120" width="190" height="70" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="245.0" y="142" class="t">IR line LEFT</text>
+<text text-anchor="middle" x="245.0" y="160" class="s">TCRT5000 module · DO</text>
+<circle cx="340" cy="170" r="3.5" fill="#14213d"/>
+<text x="329" y="174" class="p" text-anchor="end">DO</text>
+<text x="142" y="154" class="n" fill="#e07a00" text-anchor="end">+5V</text>
+<path d="M165,190 v8 M157,198 h16 M160,202 h10 M163,206 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="340,170 380,170 380,450 540,450" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="150" y="212" width="190" height="70" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="245.0" y="234" class="t">IR line CENTRE</text>
+<text text-anchor="middle" x="245.0" y="252" class="s">TCRT5000 module · DO</text>
+<circle cx="340" cy="262" r="3.5" fill="#14213d"/>
+<text x="329" y="266" class="p" text-anchor="end">DO</text>
+<text x="142" y="246" class="n" fill="#e07a00" text-anchor="end">+5V</text>
+<path d="M165,282 v8 M157,290 h16 M160,294 h10 M163,298 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="340,262 402,262 402,490 540,490" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="150" y="304" width="190" height="70" rx="8" fill="#f4f7fb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="245.0" y="326" class="t">IR line RIGHT</text>
+<text text-anchor="middle" x="245.0" y="344" class="s">TCRT5000 module · DO</text>
+<circle cx="340" cy="354" r="3.5" fill="#14213d"/>
+<text x="329" y="358" class="p" text-anchor="end">DO</text>
+<text x="142" y="338" class="n" fill="#e07a00" text-anchor="end">+5V</text>
+<path d="M165,374 v8 M157,382 h16 M160,386 h10 M163,390 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="340,354 424,354 424,530 540,530" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<rect x="150" y="420" width="190" height="100" rx="8" fill="#f2fbfb" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="245.0" y="442" class="t">KY-023 joystick</text>
+<text text-anchor="middle" x="245.0" y="460" class="s">optional · tethered</text>
+<circle cx="340" cy="475" r="3.5" fill="#14213d"/>
+<text x="329" y="479" class="p" text-anchor="end">VRx</text>
+<circle cx="340" cy="500" r="3.5" fill="#14213d"/>
+<text x="329" y="504" class="p" text-anchor="end">VRy</text>
+<text x="142" y="464" class="n" fill="#e07a00" text-anchor="end">+5V</text>
+<path d="M165,520 v8 M157,528 h16 M160,532 h10 M163,536 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="340,475 450,475 450,570 540,570" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4"/>
+<polyline points="340,500 470,500 470,610 540,610" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round" stroke-dasharray="6 4"/>
+<rect x="488" y="668" width="16" height="34" fill="#fff" stroke="#14213d" stroke-width="1.6"/>
+<text x="480" y="690" class="p" text-anchor="end">10 kΩ</text>
+<rect x="488" y="724" width="16" height="34" fill="#fff" stroke="#14213d" stroke-width="1.6"/>
+<text x="480" y="746" class="p" text-anchor="end">10 kΩ</text>
+<polyline points="540,650 496,650 496,668" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="496,702 496,724" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<path d="M496,758 v8 M488,766 h16 M491,770 h10 M494,774 h4" stroke="#14213d" stroke-width="2" fill="none"/>
+<polyline points="496,668 496,660" fill="none" stroke="#0f8b8d" stroke-width="2" stroke-linejoin="round"/>
+<text x="470" y="656" class="n" fill="#d62828" text-anchor="end">VBAT →</text>
+<rect x="150" y="820" width="200" height="100" rx="8" fill="#fff4f4" stroke="#14213d" stroke-width="2"/>
+<text text-anchor="middle" x="250.0" y="842" class="t">2S 18650 pack</text>
+<text text-anchor="middle" x="250.0" y="860" class="s">7.4 V nom · 8.4 V full</text>
+<circle cx="350" cy="860" r="3.5" fill="#14213d"/>
+<text x="339" y="864" class="p" text-anchor="end">+</text>
+<circle cx="350" cy="895" r="3.5" fill="#14213d"/>
+<text x="339" y="899" class="p" text-anchor="end">−</text>
+<polyline points="350,860 390,860" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="394" cy="860" r="4" fill="none" stroke="#d62828" stroke-width="2"/><line x1="398" y1="860" x2="428" y2="846" stroke="#d62828" stroke-width="3"/><circle cx="432" cy="860" r="4" fill="none" stroke="#d62828" stroke-width="2"/>
+<text text-anchor="middle" x="412" y="836" class="p">SWITCH</text>
+<polyline points="436,860 455,860" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<rect x="455" y="852" width="40" height="16" rx="8" fill="#fff" stroke="#d62828" stroke-width="2"/><text text-anchor="middle" x="475" y="886" class="p">3 A fuse</text>
+<polyline points="495,860 520,860 590,860 590,790" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="520,860 520,965 1205,965 1205,470 1040,470 1040,440" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="520" cy="860" r="4" fill="#14213d"/>
+<text x="1199" y="960" class="n" fill="#d62828" text-anchor="end">VBAT 7–8.4 V</text>
+<text x="1008" y="490" class="s" text-anchor="start">470 µF across VS–GND</text>
+<polyline points="350,895 720,895 720,790" fill="none" stroke="#14213d" stroke-width="3" stroke-linejoin="round"/>
+<polyline points="720,895 720,945 1222,945 1222,455 1105,455 1105,440" fill="none" stroke="#14213d" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="720" cy="895" r="4" fill="#14213d"/>
+<text x="730" y="938" class="n" fill="#14213d" text-anchor="start">COMMON GROUND: battery −, UNO, L298N, every module</text>
+<polyline points="655,790 655,812" fill="none" stroke="#e07a00" stroke-width="3" stroke-linejoin="round"/>
+<text x="648" y="810" class="n" fill="#e07a00" text-anchor="end">+5V → all modules</text>
+<text x="160" y="580" class="t" text-anchor="start">Legend</text>
+<polyline points="160,602 194,602" fill="none" stroke="#d62828" stroke-width="3" stroke-linejoin="round"/>
+<text x="204" y="606" class="s" text-anchor="start">battery / motor power</text>
+<polyline points="160,622 194,622" fill="none" stroke="#14213d" stroke-width="3" stroke-linejoin="round"/>
+<text x="204" y="626" class="s" text-anchor="start">ground</text>
+<polyline points="160,642 194,642" fill="none" stroke="#e07a00" stroke-width="3" stroke-linejoin="round"/>
+<text x="204" y="646" class="s" text-anchor="start">+5 V logic</text>
+<polyline points="160,662 194,662" fill="none" stroke="#0f8b8d" stroke-width="3" stroke-linejoin="round"/>
+<text x="204" y="666" class="s" text-anchor="start">signal</text>
+<polyline points="160,682 194,682" fill="none" stroke="#0f8b8d" stroke-width="3" stroke-linejoin="round" stroke-dasharray="6 4"/>
+<text x="204" y="686" class="s" text-anchor="start">optional (joystick)</text>
+<text x="160" y="712" class="s" text-anchor="start">* servo: separate 5 V regulator if resets</text>
+</svg>

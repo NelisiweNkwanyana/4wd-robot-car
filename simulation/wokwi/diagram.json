@@ -1,0 +1,345 @@
+{
+  "version": 1,
+  "author": "4WD Robot Car",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-arduino-uno",
+      "id": "uno",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "sonar",
+      "top": -180,
+      "left": 40,
+      "attrs": {
+        "distance": "80"
+      }
+    },
+    {
+      "type": "wokwi-servo",
+      "id": "servo",
+      "top": -180,
+      "left": 300,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-analog-joystick",
+      "id": "joy",
+      "top": -170,
+      "left": 520,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "bat",
+      "top": 260,
+      "left": 420,
+      "attrs": {
+        "value": "780"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledENA",
+      "top": -60,
+      "left": 330,
+      "attrs": {
+        "color": "blue",
+        "label": "ENA left PWM"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledIN1",
+      "top": -60,
+      "left": 370,
+      "attrs": {
+        "color": "green",
+        "label": "IN1"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledIN2",
+      "top": -60,
+      "left": 410,
+      "attrs": {
+        "color": "red",
+        "label": "IN2"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledENB",
+      "top": -60,
+      "left": 450,
+      "attrs": {
+        "color": "blue",
+        "label": "ENB right PWM"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledIN3",
+      "top": -60,
+      "left": 490,
+      "attrs": {
+        "color": "green",
+        "label": "IN3"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "ledIN4",
+      "top": -60,
+      "left": 530,
+      "attrs": {
+        "color": "red",
+        "label": "IN4"
+      }
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "lineL",
+      "top": 270,
+      "left": 60,
+      "attrs": {
+        "label": "lineL"
+      }
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "lineC",
+      "top": 270,
+      "left": 130,
+      "attrs": {
+        "label": "lineC"
+      }
+    },
+    {
+      "type": "wokwi-slide-switch",
+      "id": "lineR",
+      "top": 270,
+      "left": 200,
+      "attrs": {
+        "label": "lineR"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "sonar:VCC",
+      "uno:5V",
+      "red",
+      []
+    ],
+    [
+      "sonar:GND",
+      "uno:GND.2",
+      "black",
+      []
+    ],
+    [
+      "sonar:TRIG",
+      "uno:11",
+      "orange",
+      []
+    ],
+    [
+      "sonar:ECHO",
+      "uno:12",
+      "yellow",
+      []
+    ],
+    [
+      "servo:V+",
+      "uno:5V",
+      "red",
+      []
+    ],
+    [
+      "servo:GND",
+      "uno:GND.2",
+      "black",
+      []
+    ],
+    [
+      "servo:PWM",
+      "uno:9",
+      "orange",
+      []
+    ],
+    [
+      "joy:VCC",
+      "uno:5V",
+      "red",
+      []
+    ],
+    [
+      "joy:GND",
+      "uno:GND.3",
+      "black",
+      []
+    ],
+    [
+      "joy:HORZ",
+      "uno:A3",
+      "green",
+      []
+    ],
+    [
+      "joy:VERT",
+      "uno:A4",
+      "blue",
+      []
+    ],
+    [
+      "bat:VCC",
+      "uno:5V",
+      "red",
+      []
+    ],
+    [
+      "bat:GND",
+      "uno:GND.3",
+      "black",
+      []
+    ],
+    [
+      "bat:SIG",
+      "uno:A5",
+      "violet",
+      []
+    ],
+    [
+      "ledENA:A",
+      "uno:5",
+      "blue",
+      []
+    ],
+    [
+      "ledENA:C",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "ledIN1:A",
+      "uno:4",
+      "green",
+      []
+    ],
+    [
+      "ledIN1:C",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "ledIN2:A",
+      "uno:7",
+      "red",
+      []
+    ],
+    [
+      "ledIN2:C",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "ledENB:A",
+      "uno:6",
+      "blue",
+      []
+    ],
+    [
+      "ledENB:C",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "ledIN3:A",
+      "uno:8",
+      "green",
+      []
+    ],
+    [
+      "ledIN3:C",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "ledIN4:A",
+      "uno:10",
+      "red",
+      []
+    ],
+    [
+      "ledIN4:C",
+      "uno:GND.1",
+      "black",
+      []
+    ],
+    [
+      "lineL:2",
+      "uno:A0",
+      "green",
+      []
+    ],
+    [
+      "lineL:1",
+      "uno:GND.3",
+      "black",
+      []
+    ],
+    [
+      "lineL:3",
+      "uno:5V",
+      "red",
+      []
+    ],
+    [
+      "lineC:2",
+      "uno:A1",
+      "green",
+      []
+    ],
+    [
+      "lineC:1",
+      "uno:GND.3",
+      "black",
+      []
+    ],
+    [
+      "lineC:3",
+      "uno:5V",
+      "red",
+      []
+    ],
+    [
+      "lineR:2",
+      "uno:A2",
+      "green",
+      []
+    ],
+    [
+      "lineR:1",
+      "uno:GND.3",
+      "black",
+      []
+    ],
+    [
+      "lineR:3",
+      "uno:5V",
+      "red",
+      []
+    ]
+  ]
+}
